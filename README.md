@@ -1,0 +1,1 @@
+# rsi-status-widget
