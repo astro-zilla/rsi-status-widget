@@ -1,0 +1,12 @@
+{
+  "always_run_in_app" : false,
+  "icon" : {
+    "color" : "deep-green",
+    "glyph" : "server"
+  },
+  "name" : "RSI-status",
+  "script" : "async function getRSIStatus(webview) {\n    let js = `\n    var summary = document.querySelector(\".summary\")\n\n    var res = {\n        text: summary.firstChild.textContent.trim(),\n        time: summary.querySelector(\".summary__date\").title,\n        color: window.getComputedStyle(summary).backgroundColor\n    }\n    res\n    `\n    let res = await webview.evaluateJavaScript(js)\n    const rgb2hex = (rgb) => `#${rgb.match(\/^rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)$\/).slice(1).map(n => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`\n    res.color=rgb2hex(res.color)\n    return res\n}\n\nlet webview = new WebView()\nawait webview.loadURL(\"https:\/\/status.robertsspaceindustries.com\")\nconst status = await getRSIStatus(webview)\nlet widget = new ListWidget()\n\nlet statusTitle = widget.addText(status.text)\nwidget.addSpacer()\nlet statusTime = widget.addText(\"Last updated: \"+status.time)\nstatusTitle.font = Font.boldSystemFont(36)\nstatusTitle.centerAlignText()\nstatusTime.font = Font.systemFont(16)\nstatusTime.centerAlignText()\nwidget.backgroundColor = new Color(status.color)\nif (config.runsInWidget) {\n  Script.setWidget(widget)\n} else {\n  widget.presentMedium()\n}\n\nScript.complete()\n",
+  "share_sheet_inputs" : [
+
+  ]
+}
