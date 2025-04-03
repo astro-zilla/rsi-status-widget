@@ -4,9 +4,9 @@
 async function getRSIStatus(webview) {
     let js = `
     var summary = document.querySelector(".summary")
-
     var res = {
-        text: summary.firstChild.textContent.trim(),
+    title: summary.getAttribute("data-status"),
+        message: summary.firstChild.textContent.trim(),
         time: summary.querySelector(".summary__date").title,
         color: window.getComputedStyle(summary).backgroundColor
     }
@@ -23,12 +23,16 @@ await webview.loadURL("https://status.robertsspaceindustries.com")
 const status = await getRSIStatus(webview)
 let widget = new ListWidget()
 
-let statusTitle = widget.addText(status.text)
+let statusTitle = widget.addText(status.message)
+widget.addSpacer()
+let statusMessage=widget.addText("STATUS: "+status.title)
 widget.addSpacer()
 let statusTime = widget.addText("Last updated: "+status.time)
-statusTitle.font = Font.boldSystemFont(36)
+statusTitle.font = Font.boldSystemFont(28)
 statusTitle.centerAlignText()
-statusTime.font = Font.systemFont(16)
+statusMessage.font = Font.systemFont(16)
+statusMessage.centerAlignText()
+statusTime.font = Font.systemFont(12)
 statusTime.centerAlignText()
 widget.backgroundColor = new Color(status.color)
 if (config.runsInWidget) {
